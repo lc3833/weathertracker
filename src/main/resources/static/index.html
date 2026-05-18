@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherTracker - Dashboard</title>
+    <style>
+        body {
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+           /* Početna slika za login/registraciju sa 80% providnim belim slojem */
+           background: linear-gradient(rgba(244, 247, 246, 0.1), rgba(244, 247, 246, 0.1)),
+                       url('/images/weather-bg.jpg') no-repeat center center fixed;
+           background-size: cover;
+           color: #333;
+           margin: 0;
+           padding: 20px;
+           transition: background 0.5s ease; /* Fin prelaz kada se slika menja */
+       }
+               .container {
+                   max-width: 900px;
+                   margin: 0 auto;
+               }
+               h1 {
+                   text-align: center;
+                   color: #2c3e50;
+               }
+
+               /* AUTH STILOVI */
+               .auth-box {
+                   max-width: 400px;
+                   margin: 50px auto;
+                   background: white;
+                   padding: 30px;
+                   border-radius: 10px;
+                   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                   text-align: center;
+               }
+               .auth-box input {
+                   width: 100%;
+                   padding: 12px;
+                   margin: 10px 0;
+                   border: 1px solid #ccc;
+                   border-radius: 5px;
+                   box-sizing: border-box;
+                   font-size: 16px;
+               }
+               .auth-box button {
+                   width: 100%;
+                   border-radius: 5px;
+                   margin-top: 10px;
+               }
+               .toggle-link {
+                   color: #3498db;
+                   cursor: pointer;
+                   text-decoration: underline;
+                   margin-top: 15px;
+                   display: inline-block;
+               }
+               .logout-btn {
+                   background-color: #e74c3c;
+                   float: right;
+                   padding: 8px 15px;
+                   font-size: 14px;
+                   margin-bottom: 20px;
+                   color: white;
+                   border: none;
+                   border-radius: 5px;
+                   cursor: pointer;
+               }
+               .logout-btn:hover {
+                   background-color: #c0392b;
+               }
+
+               /* GLAVNI STILOVI */
+               .search-box {
+                   display: flex;
+                   justify-content: center;
+                   margin-bottom: 20px;
+                   clear: both;
+               }
+               .search-box input[type="text"] {
+                   padding: 12px;
+                   width: 300px;
+                   font-size: 16px;
+                   border: 1px solid #ccc;
+                   border-radius: 5px 0 0 5px;
+                   outline: none;
+               }
+               button {
+                   padding: 12px 20px;
+                   font-size: 16px;
+                   background-color: #3498db;
+                   color: white;
+                   border: none;
+                   border-radius: 0 5px 5px 0;
+                   cursor: pointer;
+                   transition: background 0.3s;
+               }
+               button:hover {
+                   background-color: #2980b9;
+               }
+               .dashboard {
+                   display: none;
+                   grid-template-columns: 1fr 1fr;
+                   gap: 20px;
+               }
+               .card {
+                   background: white;
+                   padding: 20px;
+                   border-radius: 10px;
+                   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+               }
+               .card h3 {
+                   margin-top: 0;
+                   color: #2980b9;
+                   border-bottom: 2px solid #ecf0f1;
+                   padding-bottom: 10px;
+               }
+               .data-row {
+                   display: flex;
+                   justify-content: space-between;
+                   margin-bottom: 10px;
+                   font-size: 18px;
+               }
+               .forecast-list {
+                   grid-column: span 2;
+                   display: flex;
+                   justify-content: space-between;
+                   background: white;
+                   padding: 20px;
+                   border-radius: 10px;
+                   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                   overflow-x: auto;
+               }
+               .forecast-item {
+                   text-align: center;
+                   padding: 10px;
+                   border-right: 1px solid #ecf0f1;
+                   min-width: 120px;
+               }
+               .forecast-item:last-child {
+                   border-right: none;
+               }
+               .error {
+                   color: #e74c3c;
+                   text-align: center;
+                   font-weight: bold;
+                   display: none;
+               }
+               .success {
+                   color: #2ecc71;
+                   text-align: center;
+                   font-weight: bold;
+                   display: none;
+               }
+
+               /* STILOVI ZA ISTORIJU */
+               .history-section {
+                   margin-bottom: 20px;
+                   text-align: center;
+               }
+               .history-btn {
+                   background-color: #ecf0f1;
+                   color: #2c3e50;
+                   border-radius: 20px;
+                   margin: 5px;
+                   padding: 8px 15px;
+                   font-size: 14px;
+                   display: inline-block;
+                   cursor: pointer;
+                   border: 1px solid #bdc3c7;
+               }
+               .history-btn:hover {
+                   background-color: #bdc3c7;
+               }
+    </style>
+</head>
+<body>
+
+<div id="authSection" class="container">
+    <h1>🌤️ WeatherTracker</h1>
+
+    <div id="loginBox" class="auth-box">
+        <h2>Prijavi se</h2>
+        <p id="loginError" class="error"></p>
+        <input type="text" id="loginUsername" placeholder="Korisničko ime">
+        <input type="password" id="loginPassword" placeholder="Lozinka">
+        <button onclick="login()">Prijavi se</button>
+        <span class="toggle-link" onclick="toggleAuth('register')">Nemaš nalog? Registruj se ovde.</span>
+    </div>
+
+    <div id="registerBox" class="auth-box" style="display: none;">
+        <h2>Registracija</h2>
+        <p id="registerError" class="error"></p>
+        <p id="registerSuccess" class="success"></p>
+        <input type="text" id="regUsername" placeholder="Korisničko ime">
+        <input type="email" id="regEmail" placeholder="Email adresa">
+        <input type="password" id="regPassword" placeholder="Lozinka">
+        <input type="text" id="regPhone" placeholder="Broj telefona (npr. 0601234567)">
+        <button onclick="register()">Registruj se</button>
+        <span class="toggle-link" onclick="toggleAuth('login')">Već imaš nalog? Prijavi se ovde.</span>
+    </div>
+</div>
+
+<div id="mainApp" class="container" style="display: none;">
+    <button class="logout-btn" onclick="logout()">Odjavi se</button>
+    <h1 id="welcomeMessage">🌤️ WeatherTracker Dashboard</h1>
+
+    <div class="search-box">
+        <input type="text" id="cityInput" placeholder="Unesi ime grada (npr. Belgrade, London)...">
+        <button onclick="searchData()">Pretraži</button>
+    </div>
+
+    <p id="errorMessage" class="error">Došlo je do greške. Proverite ime grada.</p>
+
+    <div class="history-section" id="historyContainer" style="display: none;">
+        <h4 style="margin-bottom: 10px; color: #FFD900;">Tvoja istorija pretraga:</h4>
+        <div id="historyButtons"></div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="card">
+            <h3>📍 Trenutno vreme: <span id="cityNameDisplay"></span></h3>
+            <div class="data-row"><span>Temperatura:</span> <strong id="tempDisplay">-- °C</strong></div>
+            <div class="data-row"><span>Vlažnost vazduha:</span> <strong id="humidityDisplay">-- %</strong></div>
+            <div class="data-row"><span>Opis:</span> <strong id="descDisplay" style="text-transform: capitalize;">--</strong></div>
+        </div>
+
+        <div class="card">
+            <h3>🏭 Kvalitet vazduha (AQI)</h3>
+            <div class="data-row"><span>Indeks (1=Dobro, 5=Loše):</span> <strong id="aqiDisplay">--</strong></div>
+            <div class="data-row"><span>PM2.5 čestice:</span> <strong id="pmDisplay">--</strong></div>
+            <div class="data-row"><span>Ugljen-monoksid (CO):</span> <strong id="coDisplay">--</strong></div>
+        </div>
+
+        <div class="card" style="grid-column: span 2;">
+            <h3>🕒 Prognoza (narednih 15 sati)</h3>
+            <div class="forecast-list" id="forecastDisplay" style="box-shadow: none; padding: 0;"></div>
+        </div>
+
+        <div class="card" style="grid-column: span 2;">
+            <h3>📅 Dnevna prognoza (Narednih 5 dana)</h3>
+            <div class="forecast-list" id="dailyForecastDisplay" style="box-shadow: none; padding: 0;"></div>
+        </div>
+
+        <div class="card" style="grid-column: span 2; margin-top: 20px;">
+            <h3>📊 Top 5 najtraženijih gradova</h3>
+            <div id="topCitiesDisplay" style="display: flex; justify-content: space-around; flex-wrap: wrap; padding-top: 10px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+
+    window.onload = () => {
+        const savedUser = localStorage.getItem('weatherUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            showMainApp();
+        }
+    };
+
+    function toggleAuth(type) {
+        document.getElementById('loginError').style.display = 'none';
+        document.getElementById('registerError').style.display = 'none';
+        document.getElementById('registerSuccess').style.display = 'none';
+
+        if (type === 'register') {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('registerBox').style.display = 'block';
+        } else {
+            document.getElementById('registerBox').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'block';
+        }
+    }
+
+    async function login() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorElement = document.getElementById('loginError');
+
+        if (!username || !password) {
+            errorElement.innerText = "Unesite sve podatke.";
+            errorElement.style.display = 'block';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (res.ok) {
+                currentUser = await res.json();
+                localStorage.setItem('weatherUser', JSON.stringify(currentUser));
+                showMainApp();
+            } else {
+                errorElement.innerText = await res.text();
+                errorElement.style.display = 'block';
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function register() {
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        const phoneNumber = document.getElementById('regPhone').value; // NOVO
+        const errorElement = document.getElementById('registerError');
+        const successElement = document.getElementById('registerSuccess');
+
+        if (!username || !email || !password || !phoneNumber) {
+            errorElement.innerText = "Sva polja su obavezna.";
+            errorElement.style.display = 'block';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password, phoneNumber }) // DODAT TELEFON
+            });
+
+            if (res.ok) {
+                errorElement.style.display = 'none';
+                successElement.innerText = "Uspešna registracija! Možete se prijaviti.";
+                successElement.style.display = 'block';
+                setTimeout(() => toggleAuth('login'), 2000);
+            } else {
+                // OVO ČITA NAŠE SPECIFIČNE GREŠKE IZ BEKENDA I ISPISUJE IH CRVENO
+                errorElement.innerText = await res.text();
+                errorElement.style.display = 'block';
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('weatherUser');
+        location.reload();
+    }
+
+    function showMainApp() {
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('welcomeMessage').innerText = '🌤️ Dobrodošao/la, ' + currentUser.username + '!';
+        // MENJANJE POZADINE NA DRUGU SLIKU NAKON LOGOVANJA
+        document.body.style.background = "linear-gradient(rgba(244, 247, 246, 0.1), rgba(244, 247, 246, 0.1)), url('/images/weather-bg2.jpg') no-repeat center center fixed";
+        document.body.style.backgroundSize = "cover";
+        loadHistory();
+        loadTopCities();
+    }
+
+    async function loadHistory() {
+        if (!currentUser) return;
+        try {
+            const res = await fetch(`/api/locations/history/${currentUser.id}`);
+            if (res.ok) {
+                const historyData = await res.json();
+                const container = document.getElementById('historyContainer');
+                const btnContainer = document.getElementById('historyButtons');
+
+                if (historyData.length > 0) {
+                    btnContainer.innerHTML = '';
+                    historyData.forEach(loc => {
+                        const btn = document.createElement('button');
+                        btn.className = 'history-btn';
+                        btn.innerText = loc.city;
+                        btn.onclick = () => {
+                            document.getElementById('cityInput').value = loc.city;
+                            searchData();
+                        };
+                        btnContainer.appendChild(btn);
+                    });
+                    container.style.display = 'block';
+                }
+            }
+        } catch (error) {
+            console.error("Greška pri učitavanju istorije:", error);
+        }
+    }
+
+    async function loadTopCities() {
+            try {
+                const res = await fetch('/api/statistics/top-cities');
+                if (res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById('topCitiesDisplay');
+                    container.innerHTML = '';
+
+                    data.forEach((item, index) => {
+                        // Dodajemo medalje za prva tri mesta!
+                        let medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🔹';
+                        container.innerHTML += `
+                            <div class="forecast-item" style="flex: 1; min-width: 150px; margin: 5px; background: #f8f9fa; border-radius: 8px;">
+                                <span style="font-size: 24px;">${medal}</span><br>
+                                <strong style="font-size: 18px; text-transform: capitalize;">${item.city}</strong><br><br>
+                                <span style="color: #7f8c8d;">Pretraga: <b style="color: #2980b9;">${item.searchCount}</b></span>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error("Greška pri učitavanju top gradova:", error);
+            }
+        }
+
+
+    async function searchData() {
+        const city = document.getElementById('cityInput').value;
+        const dashboard = document.getElementById('dashboard');
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (!city) return;
+
+        dashboard.style.display = 'none';
+        errorMessage.style.display = 'none';
+
+        try {
+            // Trenutno vreme
+            const weatherRes = await fetch(`/api/records/current/${city}`);
+            if (!weatherRes.ok) throw new Error('Grad nije pronađen');
+            const weatherData = await weatherRes.json();
+
+            document.getElementById('cityNameDisplay').innerText = weatherData.location.city + ", " + weatherData.location.country;
+            document.getElementById('tempDisplay').innerText = weatherData.temperatureC + " °C";
+            document.getElementById('humidityDisplay').innerText = weatherData.humidity + " %";
+            document.getElementById('descDisplay').innerText = weatherData.description;
+
+            // Zagađenje
+            const pollutionRes = await fetch(`/api/pollution/current/${city}`);
+            if (pollutionRes.ok) {
+                const pollutionData = await pollutionRes.json();
+                document.getElementById('aqiDisplay').innerText = pollutionData.aqi;
+                document.getElementById('pmDisplay').innerText = pollutionData.pm25;
+                document.getElementById('coDisplay').innerText = pollutionData.co;
+            }
+
+            // Prognoza (na 3h i Dnevna)
+            const forecastRes = await fetch(`/api/forecast/${city}`);
+            if (forecastRes.ok) {
+                const forecastData = await forecastRes.json();
+
+                // 1. PRIKAZ NA 3H (Samo prvih 5 unosa za danas/sutra)
+                const forecastContainer = document.getElementById('forecastDisplay');
+                forecastContainer.innerHTML = '';
+
+                forecastData.slice(0, 5).forEach(item => {
+                    const dateObj = new Date(item.forecastTime);
+                    const html = `
+                        <div class="forecast-item" style="flex: 1;">
+                            <strong>${dateObj.getDate()}.${dateObj.getMonth() + 1}.</strong><br>
+                            <span style="color: #7f8c8d;">${dateObj.getHours()}:00h</span><br><br>
+                            <span style="font-size: 20px; color: #e74c3c; font-weight: bold;">${Math.round(item.expectedTempC)} °C</span><br>
+                            <span style="font-size: 14px; color: #3498db;">Padavine: ${Math.round(item.rainProbability * 100)}%</span>
+                        </div>
+                    `;
+                    forecastContainer.innerHTML += html;
+                });
+
+                // 2. DNEVNA PROGNOZA (Min/Max po danima)
+                const dailyData = {};
+                forecastData.forEach(item => {
+                    const dateObj = new Date(item.forecastTime);
+                    const dateKey = dateObj.toLocaleDateString('sr-RS', { weekday: 'short', day: 'numeric', month: 'numeric' });
+
+                    if (!dailyData[dateKey]) {
+                        dailyData[dateKey] = { min: item.expectedTempC, max: item.expectedTempC };
+                    } else {
+                        dailyData[dateKey].min = Math.min(dailyData[dateKey].min, item.expectedTempC);
+                        dailyData[dateKey].max = Math.max(dailyData[dateKey].max, item.expectedTempC);
+                    }
+                });
+
+                const dailyContainer = document.getElementById('dailyForecastDisplay');
+                dailyContainer.innerHTML = '';
+                for (const [date, temps] of Object.entries(dailyData)) {
+                    dailyContainer.innerHTML += `
+                        <div class="forecast-item" style="flex: 1;">
+                            <strong style="text-transform: capitalize; font-size: 16px;">${date}</strong><br><br>
+                            <span style="color: #e74c3c; font-weight: bold; font-size: 18px;">Max: ${Math.round(temps.max)}°C</span><br><br>
+                            <span style="color: #3498db; font-weight: bold; font-size: 16px;">Min: ${Math.round(temps.min)}°C</span>
+                        </div>
+                    `;
+                }
+            }
+
+            dashboard.style.display = 'grid';
+
+            // Upiši u istoriju
+            if (currentUser) {
+                await fetch(`/api/locations/history?city=${city}&userId=${currentUser.id}`, { method: 'POST' });
+                loadHistory();
+                loadTopCities();
+            }
+
+        } catch (error) {
+            errorMessage.style.display = 'block';
+            console.error(error);
+        }
+    }
+</script>
+
+</body>
+</html>
