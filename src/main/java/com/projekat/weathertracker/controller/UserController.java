@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> register(@RequestBody UserDTO userDTO) {
         try {
             User user = new User();
             user.setUsername(userDTO.getUsername());
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO loginUserDTO) {
+    public ResponseEntity<Object> login(@RequestBody UserDTO loginUserDTO) {
         try {
             User user = userService.login(loginUserDTO.getUsername(), loginUserDTO.getPassword());
             return ResponseEntity.ok(user);
