@@ -32,7 +32,12 @@ public class LocationController {
     }
 
     @PostMapping
-    public Location createLocation(@RequestBody Location location) {
+    public Location createLocation(@RequestBody com.projekat.weathertracker.dto.LocationDTO locationDTO) {
+        Location location = new Location();
+        location.setCity(locationDTO.getCity());
+        location.setCountry(locationDTO.getCountry());
+        location.setLatitude(locationDTO.getLatitude());
+        location.setLongitude(locationDTO.getLongitude());
         return locationService.saveLocation(location);
     }
 
