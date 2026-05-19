@@ -1,3 +1,0 @@
-2026-05-15 04:47:16.390485+02:00 jdbc[13]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM LOCATION LOCATION [*]FORECAST_RECORD"; SQL statement:
-SELECT * FROM LOCATION LOCATION FORECAST_RECORD [42000-232]
