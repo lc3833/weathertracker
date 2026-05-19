@@ -1,5 +1,6 @@
 package com.projekat.weathertracker.controller;
 
+import com.projekat.weathertracker.dto.UserDTO;
 import com.projekat.weathertracker.model.User;
 import com.projekat.weathertracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
         try {
+            User user = new User();
+            user.setUsername(userDTO.getUsername());
+            user.setEmail(userDTO.getEmail());
+            user.setPassword(userDTO.getPassword());
+            user.setPhoneNumber(userDTO.getPhoneNumber());
+
             User savedUser = userService.createUser(user);
             return ResponseEntity.ok(savedUser);
         } catch (RuntimeException e) {
@@ -28,9 +35,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginUser) {
+    public ResponseEntity<?> login(@RequestBody UserDTO loginUserDTO) {
         try {
-            User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
+            User user = userService.login(loginUserDTO.getUsername(), loginUserDTO.getPassword());
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
