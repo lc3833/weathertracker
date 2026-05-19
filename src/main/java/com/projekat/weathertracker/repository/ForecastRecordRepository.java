@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface ForecastRecordRepository extends JpaRepository<ForecastRecord, Long> {
 
-    // NOVO: Metoda koja briše stare prognoze za određeni grad
     @Transactional
     void deleteByLocation(Location location);
 }

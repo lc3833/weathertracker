@@ -34,7 +34,6 @@ public class WeatherRecordServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Inicijalizacija mock objekata
         MockitoAnnotations.openMocks(this);
 
         dummyLocation = new Location();
@@ -43,25 +42,19 @@ public class WeatherRecordServiceTest {
 
     @Test
     void testFetchAndSaveWeatherForCity_InvalidTemperature_ThrowsException() {
-        // Priprema lažnog odgovora sa API-ja sa nemogućom temperaturom
         OpenWeatherResponse mockResponse = new OpenWeatherResponse();
         OpenWeatherResponse.MainData mainData = new OpenWeatherResponse.MainData();
-        mainData.setTemp(-300.00); // Ovo mora da pukne jer je ispod -273.15
+        mainData.setTemp(-300.00);
         mockResponse.setMain(mainData);
 
-        // Podešavanje mock ponašanja
         when(locationService.getOrFetchLocation("Belgrade")).thenReturn(dummyLocation);
         when(restTemplate.getForObject(anyString(), eq(OpenWeatherResponse.class))).thenReturn(mockResponse);
 
-        // Proveravamo da li će baciti RuntimeException sa odgovarajućom porukom
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             weatherRecordService.fetchAndSaveWeatherForCity("Belgrade");
         });
 
-        // Verifikacija
         assertTrue(exception.getMessage().contains("nemoguća temperatura"));
-
-        // Proveravamo da repozitorijum NIJE pozvan (podaci nisu sačuvani u bazu)
         verify(weatherRecordRepository, never()).save(any(WeatherRecord.class));
     }
 }

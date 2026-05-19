@@ -10,7 +10,5 @@ import java.util.Optional;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     Optional<Location> findByCityIgnoreCase(String city);
-
-    // NOVA LINIJA: Traži sve lokacije koje je pretražio određeni korisnik
     List<Location> findByUserId(Long userId);
 }

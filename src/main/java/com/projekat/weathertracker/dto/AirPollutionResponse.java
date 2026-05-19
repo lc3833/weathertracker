@@ -16,13 +16,13 @@ public class AirPollutionResponse {
 
     @Data
     public static class Main {
-        private Integer aqi; // Air Quality Index (1 = Dobro, 5 = Veoma loše)
+        private Integer aqi;
     }
 
     @Data
     public static class Components {
         private Double co;
         private Double no2;
-        private Double pm2_5; // PM2.5 čestice
+        private Double pm2_5;
     }
 }

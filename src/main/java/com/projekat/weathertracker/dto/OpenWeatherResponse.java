@@ -6,7 +6,7 @@ import java.util.List;
 @Data
 public class OpenWeatherResponse {
 
-    private CoordData coord; // NOVO: Hvata koordinate grada
+    private CoordData coord;
     private MainData main;
     private List<Weather> weather;
     private SysData sys;

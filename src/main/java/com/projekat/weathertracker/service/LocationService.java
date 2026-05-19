@@ -17,7 +17,7 @@ public class LocationService {
 
     private final LocationRepository locationRepository;
     private final RestTemplate restTemplate;
-    private final UserRepository userRepository; // NOVO
+    private final UserRepository userRepository;
 
     @Value("${openweathermap.api.key}")
     private String apiKey;
@@ -29,7 +29,7 @@ public class LocationService {
     public LocationService(LocationRepository locationRepository, RestTemplate restTemplate, UserRepository userRepository) {
         this.locationRepository = locationRepository;
         this.restTemplate = restTemplate;
-        this.userRepository = userRepository; // NOVO
+        this.userRepository = userRepository;
     }
 
     public Location getOrFetchLocation(String cityName) {
@@ -50,7 +50,6 @@ public class LocationService {
                 });
     }
 
-    // --- NOVE METODE ZA NIVO 2 I 3 ---
     public Location saveToUserHistory(String cityName, Long userId) {
         Location location = getOrFetchLocation(cityName);
         userRepository.findById(userId).ifPresent(user -> {
@@ -63,7 +62,6 @@ public class LocationService {
     public List<Location> getUserHistory(Long userId) {
         return locationRepository.findByUserId(userId);
     }
-    // ----------------------------------
 
     public List<Location> getAllLocations() {
         return locationRepository.findAll();

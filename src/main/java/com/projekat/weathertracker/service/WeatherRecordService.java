@@ -38,7 +38,6 @@ public class WeatherRecordService {
         return weatherRecordRepository.findAll();
     }
 
-    // NAŠA NOVA METODA ZA VALIDACIJU (Po zahtevu profesora)
     public void validateTemperature(Double temperature) {
         if (temperature < -273.15) {
             throw new RuntimeException("Fizički nemoguća temperatura! Ne može biti niža od apsolutne nule (-273.15°C).");
@@ -54,9 +53,7 @@ public class WeatherRecordService {
         if (response != null && response.getMain() != null) {
             Double temp = response.getMain().getTemp();
 
-            // POZIVAMO VALIDACIJU PRE UPISA
             validateTemperature(temp);
-
             WeatherRecord record = new WeatherRecord();
             record.setTemperatureC(temp);
             record.setHumidity(response.getMain().getHumidity());

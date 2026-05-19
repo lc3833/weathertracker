@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 public interface WeatherRecordRepository extends JpaRepository<WeatherRecord, Long> {
 
-    // NOVO: Specijalni upit koji spaja tabele, broji pretrage po gradu i sortira ih opadajuće
     @Query("SELECT new com.projekat.weathertracker.dto.CityStatsDTO(l.city, COUNT(w.id)) " +
             "FROM WeatherRecord w JOIN w.location l " +
             "GROUP BY l.city " +

@@ -16,7 +16,6 @@ public class Location {
     private Double latitude;
     private Double longitude;
 
-    // NOVO: Veza sa korisnikom prema dijagramu
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

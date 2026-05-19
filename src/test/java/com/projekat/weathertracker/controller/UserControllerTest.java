@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,10 +38,11 @@ public class UserControllerTest {
     void testRegisterUser_Success() {
         when(userService.createUser(testUser)).thenReturn(testUser);
 
-        User response = userController.register(testUser);
+        ResponseEntity<?> response = userController.register(testUser);
 
         assertNotNull(response);
-        assertEquals("lazar_cvetkovic", response.getUsername());
+        User body = (User) response.getBody();
+        assertEquals("lazar_cvetkovic", body.getUsername());
         verify(userService).createUser(testUser);
     }
 }

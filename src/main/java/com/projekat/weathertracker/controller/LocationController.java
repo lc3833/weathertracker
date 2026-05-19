@@ -42,13 +42,11 @@ public class LocationController {
         return ResponseEntity.noContent().build();
     }
 
-    // NOVO: Čuvanje u istoriju
     @PostMapping("/history")
     public ResponseEntity<Location> saveHistory(@RequestParam String city, @RequestParam Long userId) {
         return ResponseEntity.ok(locationService.saveToUserHistory(city, userId));
     }
 
-    // NOVO: Čitanje istorije
     @GetMapping("/history/{userId}")
     public ResponseEntity<List<Location>> getHistory(@PathVariable Long userId) {
         return ResponseEntity.ok(locationService.getUserHistory(userId));

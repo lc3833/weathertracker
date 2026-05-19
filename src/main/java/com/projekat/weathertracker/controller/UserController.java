@@ -27,14 +27,13 @@ public class UserController {
         }
     }
 
-    // NOVI ENDPOINT ZA LOGIN
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser) {
         try {
             User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage()); // Vraća tekst greške (npr. Pogrešna lozinka)
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

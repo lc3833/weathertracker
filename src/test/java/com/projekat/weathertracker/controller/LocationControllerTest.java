@@ -28,7 +28,6 @@ public class LocationControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Inicijalizacija mock objekata
         MockitoAnnotations.openMocks(this);
 
         dummyLocation = new Location();
@@ -40,17 +39,10 @@ public class LocationControllerTest {
 
     @Test
     void testGetAllLocations_Success() {
-        // Podešavamo da naš lažni servis vrati lažnu listu lokacija
         when(locationService.getAllLocations()).thenReturn(dummyLocations);
-
-        // Pokrećemo metodu kontrolera
         List<Location> response = locationController.getAllLocations();
-
-        // Proveravamo da li je sve prošlo kako treba
         assertEquals(1, response.size());
         assertEquals("London", response.get(0).getCity());
-
-        // Potvrđujemo da je metoda servisa zaista pozvana
         verify(locationService).getAllLocations();
     }
 }

@@ -18,7 +18,7 @@ import java.util.List;
 public class ForecastService {
 
     private final ForecastRecordRepository forecastRepository;
-    private final LocationService locationService; // PROMENJENO
+    private final LocationService locationService;
     private final RestTemplate restTemplate;
 
     @Value("${openweathermap.api.key}")
@@ -29,7 +29,7 @@ public class ForecastService {
 
     @Autowired
     public ForecastService(ForecastRecordRepository forecastRepository,
-                           LocationService locationService, // PROMENJENO
+                           LocationService locationService,
                            RestTemplate restTemplate) {
         this.forecastRepository = forecastRepository;
         this.locationService = locationService;
@@ -47,12 +47,10 @@ public class ForecastService {
 
         if (response != null && response.getList() != null) {
 
-            // Pre upisa novih podataka, brišemo stare podatke za ovaj grad iz baze!
             forecastRepository.deleteByLocation(location);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-            // PROMENJENO: Sada uzimamo SVE podatke (svih 5 dana na svaka 3h), a ne samo prvih 5
             for (ForecastResponse.ForecastItem item : response.getList()) {
                 ForecastRecord record = new ForecastRecord();
                 record.setExpectedTempC(item.getMain().getTemp());

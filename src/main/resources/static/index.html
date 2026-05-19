@@ -7,14 +7,13 @@
     <style>
         body {
            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-           /* Početna slika za login/registraciju sa 80% providnim belim slojem */
            background: linear-gradient(rgba(244, 247, 246, 0.1), rgba(244, 247, 246, 0.1)),
                        url('/images/weather-bg.jpg') no-repeat center center fixed;
            background-size: cover;
            color: #333;
            margin: 0;
            padding: 20px;
-           transition: background 0.5s ease; /* Fin prelaz kada se slika menja */
+           transition: background 0.5s ease;
        }
                .container {
                    max-width: 900px;
@@ -25,7 +24,6 @@
                    color: #2c3e50;
                }
 
-               /* AUTH STILOVI */
                .auth-box {
                    max-width: 400px;
                    margin: 50px auto;
@@ -71,7 +69,6 @@
                    background-color: #c0392b;
                }
 
-               /* GLAVNI STILOVI */
                .search-box {
                    display: flex;
                    justify-content: center;
@@ -154,7 +151,6 @@
                    display: none;
                }
 
-               /* STILOVI ZA ISTORIJU */
                .history-section {
                    margin-bottom: 20px;
                    text-align: center;
@@ -311,7 +307,7 @@
         const username = document.getElementById('regUsername').value;
         const email = document.getElementById('regEmail').value;
         const password = document.getElementById('regPassword').value;
-        const phoneNumber = document.getElementById('regPhone').value; // NOVO
+        const phoneNumber = document.getElementById('regPhone').value;
         const errorElement = document.getElementById('registerError');
         const successElement = document.getElementById('registerSuccess');
 
@@ -325,7 +321,7 @@
             const res = await fetch('/api/users/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password, phoneNumber }) // DODAT TELEFON
+                body: JSON.stringify({ username, email, password, phoneNumber })
             });
 
             if (res.ok) {
@@ -334,7 +330,6 @@
                 successElement.style.display = 'block';
                 setTimeout(() => toggleAuth('login'), 2000);
             } else {
-                // OVO ČITA NAŠE SPECIFIČNE GREŠKE IZ BEKENDA I ISPISUJE IH CRVENO
                 errorElement.innerText = await res.text();
                 errorElement.style.display = 'block';
             }
@@ -352,7 +347,6 @@
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('welcomeMessage').innerText = '🌤️ Dobrodošao/la, ' + currentUser.username + '!';
-        // MENJANJE POZADINE NA DRUGU SLIKU NAKON LOGOVANJA
         document.body.style.background = "linear-gradient(rgba(244, 247, 246, 0.1), rgba(244, 247, 246, 0.1)), url('/images/weather-bg2.jpg') no-repeat center center fixed";
         document.body.style.backgroundSize = "cover";
         loadHistory();
@@ -397,7 +391,6 @@
                     container.innerHTML = '';
 
                     data.forEach((item, index) => {
-                        // Dodajemo medalje za prva tri mesta!
                         let medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🔹';
                         container.innerHTML += `
                             <div class="forecast-item" style="flex: 1; min-width: 150px; margin: 5px; background: #f8f9fa; border-radius: 8px;">
@@ -425,7 +418,6 @@
         errorMessage.style.display = 'none';
 
         try {
-            // Trenutno vreme
             const weatherRes = await fetch(`/api/records/current/${city}`);
             if (!weatherRes.ok) throw new Error('Grad nije pronađen');
             const weatherData = await weatherRes.json();
@@ -435,7 +427,6 @@
             document.getElementById('humidityDisplay').innerText = weatherData.humidity + " %";
             document.getElementById('descDisplay').innerText = weatherData.description;
 
-            // Zagađenje
             const pollutionRes = await fetch(`/api/pollution/current/${city}`);
             if (pollutionRes.ok) {
                 const pollutionData = await pollutionRes.json();
@@ -444,12 +435,9 @@
                 document.getElementById('coDisplay').innerText = pollutionData.co;
             }
 
-            // Prognoza (na 3h i Dnevna)
             const forecastRes = await fetch(`/api/forecast/${city}`);
             if (forecastRes.ok) {
                 const forecastData = await forecastRes.json();
-
-                // 1. PRIKAZ NA 3H (Samo prvih 5 unosa za danas/sutra)
                 const forecastContainer = document.getElementById('forecastDisplay');
                 forecastContainer.innerHTML = '';
 
@@ -466,7 +454,6 @@
                     forecastContainer.innerHTML += html;
                 });
 
-                // 2. DNEVNA PROGNOZA (Min/Max po danima)
                 const dailyData = {};
                 forecastData.forEach(item => {
                     const dateObj = new Date(item.forecastTime);
@@ -495,7 +482,7 @@
 
             dashboard.style.display = 'grid';
 
-            // Upiši u istoriju
+
             if (currentUser) {
                 await fetch(`/api/locations/history?city=${city}&userId=${currentUser.id}`, { method: 'POST' });
                 loadHistory();

@@ -24,7 +24,6 @@ public class WeatherRecordController {
         return weatherRecordService.getAllRecords();
     }
 
-    // OVO JE NAŠ NOVI IPHONE-STYLE ENDPOINT
     @GetMapping("/current/{city}")
     public ResponseEntity<WeatherRecord> getCurrentWeather(@PathVariable String city) {
         try {

@@ -55,7 +55,7 @@ public class UserServiceTest {
 
     @Test
     void testCreateUser_InvalidPassword_ThrowsException() {
-        validUser.setPassword("kratka"); // Nema 8 karaktera ni broj
+        validUser.setPassword("kratka");
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> userService.createUser(validUser));
         assertTrue(exception.getMessage().contains("najmanje 8 karaktera"));
@@ -63,7 +63,7 @@ public class UserServiceTest {
 
     @Test
     void testCreateUser_InvalidPhoneNumber_ThrowsException() {
-        validUser.setPhoneNumber("123"); // Prekratak
+        validUser.setPhoneNumber("123");
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> userService.createUser(validUser));
         assertTrue(exception.getMessage().contains("između 9 i 15 cifara"));

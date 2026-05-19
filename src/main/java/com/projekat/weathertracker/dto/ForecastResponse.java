@@ -11,8 +11,8 @@ public class ForecastResponse {
     public static class ForecastItem {
         private Long dt;
         private MainData main;
-        private Double pop; // Verovatnoća padavina
-        private String dt_txt; // Datum i vreme kao tekst
+        private Double pop;
+        private String dt_txt;
     }
 
     @Data

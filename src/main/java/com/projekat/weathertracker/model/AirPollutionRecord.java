@@ -11,7 +11,7 @@ public class AirPollutionRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer aqi; // Air Quality Index
+    private Integer aqi;
     private Double co;
     private Double no2;
     private Double pm25;

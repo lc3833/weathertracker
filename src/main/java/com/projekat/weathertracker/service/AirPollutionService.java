@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class AirPollutionService {
 
     private final AirPollutionRecordRepository pollutionRepository;
-    private final LocationService locationService; // PROMENJENO
+    private final LocationService locationService;
     private final RestTemplate restTemplate;
 
     @Value("${openweathermap.api.key}")
@@ -26,7 +26,7 @@ public class AirPollutionService {
 
     @Autowired
     public AirPollutionService(AirPollutionRecordRepository pollutionRepository,
-                               LocationService locationService, // PROMENJENO
+                               LocationService locationService,
                                RestTemplate restTemplate) {
         this.pollutionRepository = pollutionRepository;
         this.locationService = locationService;
@@ -34,14 +34,12 @@ public class AirPollutionService {
     }
 
     public AirPollutionRecord fetchAndSavePollutionForCity(String cityName) {
-        // PROMENJENO: Zovemo LocationService da sam nađe ili kreira grad
         Location location = locationService.getOrFetchLocation(cityName);
 
         if (location.getLatitude() == null || location.getLongitude() == null) {
             throw new RuntimeException("Lokacija nema upisane koordinate.");
         }
 
-        // Pravimo URL za Air Pollution API (menjamo /weather u /air_pollution)
         String baseUrl = apiUrl.replace("/weather", "/air_pollution");
         String url = baseUrl + "?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&appid=" + apiKey;
 
@@ -49,8 +47,6 @@ public class AirPollutionService {
 
         if (response != null && response.getList() != null && !response.getList().isEmpty()) {
             AirPollutionResponse.PollutionData data = response.getList().get(0);
-
-            // Čuvamo u bazu
             AirPollutionRecord record = new AirPollutionRecord();
             record.setAqi(data.getMain().getAqi());
             record.setCo(data.getComponents().getCo());

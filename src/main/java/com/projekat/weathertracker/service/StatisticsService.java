@@ -19,7 +19,7 @@ public class StatisticsService {
     }
 
     public List<CityStatsDTO> getTop5MostSearchedCities() {
-        // PageRequest.of(0, 5) komanduje bazi da nam da samo prvih 5 rezultata
+
         return weatherRecordRepository.findTopSearchedCities(PageRequest.of(0, 5));
     }
 }
